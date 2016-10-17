@@ -48,7 +48,7 @@ public class ProjectileTest : MonoBehaviour {
 
 
         Debug.Log("Adding a force");
-        Vector3 dir = Quaternion.AngleAxis(angle, clone.transform.forward) * clone.transform.right;
+        Vector3 dir = Quaternion.AngleAxis(angle, this.transform.forward) * this.transform.right;
         Rigidbody rigid = clone.GetComponent<Rigidbody>();
         rigid.AddForce(dir * force);
 
