@@ -30,7 +30,8 @@ public class CatapultHandler : MonoBehaviour {
 
     void OnReleaseProjectile(GameObject projectile)
     {
-        //Vector3 newDir = this.transform.position, target.transform.position;
+        //
+        Vector3 newDir = this.transform.position - target.transform.position;
         //projectile.transform.rotation = Quaternion.RotateTowards(newDir);
     }
 
