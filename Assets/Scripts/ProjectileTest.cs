@@ -19,7 +19,7 @@ public class ProjectileTest : MonoBehaviour {
 
     void Update()
     {
-        Debug.DrawRay(this.transform.position, this.transform.forward, Color.cyan);
+        //Debug.DrawRay(this.transform.position, this.transform.forward, Color.cyan);
     }
 
     private void startFiring()
