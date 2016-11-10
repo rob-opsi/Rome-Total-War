@@ -3,22 +3,29 @@ using System.Collections;
 
 public class CameraControls : MonoBehaviour {
 
-    public float mSpeed;
-    public float interpolation;
-    public float mDelta;
+    public float moveSpeed;
+    public float rotSpeed;
+    public float moveInterpolation;
+    public float rotInterpolation;
+    public float screenOffset;
 
     private Vector3 newPos;
+    private Vector3 newRot;
 
 	// Use this for initialization
 	void Start () {
         newPos = this.transform.position;
+        newRot = this.transform.rotation.eulerAngles;
     }
 	
 	// Update is called once per frame
 	void Update () {
-        CheckMousePosition();
+        WASD();
+        MouseRotate();
+        //CheckMousePosition();
 
         Move();
+        Rotate();
     }
 
     /// <summary>
@@ -27,28 +34,90 @@ public class CameraControls : MonoBehaviour {
     private void CheckMousePosition()
     {
         // Move the camera right
-        if (Input.mousePosition.x >= Screen.width - mDelta)
+        if (Input.mousePosition.x >= Screen.width - screenOffset)
         {
-            newPos.x += mSpeed;
+            newPos.x += moveSpeed;
         }
 
         // Move the camera left
-        if (Input.mousePosition.x <= 0 + mDelta)
+        if (Input.mousePosition.x <= 0 + screenOffset)
         {
-            newPos.x -= mSpeed;
+            newPos.x -= moveSpeed;
         }
 
         // Move the camera forward
-        if (Input.mousePosition.y >= Screen.height - mDelta)
+        if (Input.mousePosition.y >= Screen.height - screenOffset)
         {
-            newPos.z += mSpeed;
+            newPos.z += moveSpeed;
         }
 
         // Move the camera backwards
-        if (Input.mousePosition.y <= 0 + mDelta)
+        if (Input.mousePosition.y <= 0 + screenOffset)
         {
-            newPos.z -= mSpeed;
+            newPos.z -= moveSpeed;
         }
+    }
+
+    /// <summary>
+    /// WASD controls
+    /// </summary>
+    private void WASD()
+    {
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+
+        if(horizontal < 0)
+        {
+            newPos -= (this.transform.right * .5f);
+        }
+
+        if(horizontal > 0)
+        {
+            newPos += (this.transform.right * .5f);
+        }
+
+        if(vertical < 0)
+        {
+            newPos -= (this.transform.forward * .5f);
+            newPos.y = this.transform.position.y;
+        }
+
+        if(vertical > 0)
+        {
+
+            newPos += (this.transform.forward * .5f);
+            newPos.y = this.transform.position.y;
+        }
+
+    }
+
+    /// <summary>
+    /// This handles the mouse going towards the edge of the screen and changes our desired quaternion
+    /// </summary>
+    private void MouseRotate()
+    {
+        // Move the camera right
+        if (Input.mousePosition.x >= Screen.width - screenOffset)
+        {
+            newRot = this.transform.rotation.eulerAngles;
+            newRot.y += rotSpeed;
+            
+        }
+
+        // Move the camera left
+        if (Input.mousePosition.x <= 0 + screenOffset)
+        {
+            newRot = this.transform.rotation.eulerAngles;
+            newRot.y -= rotSpeed;
+        }
+    }
+
+    /// <summary>
+    /// This handles our actual rotation of the camera
+    /// </summary>
+    private void Rotate()
+    {
+        this.transform.rotation = Quaternion.Slerp(this.transform.rotation, Quaternion.Euler(newRot), moveInterpolation);
     }
 
     /// <summary>
@@ -57,6 +126,6 @@ public class CameraControls : MonoBehaviour {
     private void Move()
     {
         //transform.position = Vector3.Lerp(this.transform.position, newPos, interpolation * Time.deltaTime);
-        transform.position = Vector3.Lerp(this.transform.position, newPos, interpolation);
+        transform.position = Vector3.Lerp(this.transform.position, newPos, moveInterpolation);
     }
 }
