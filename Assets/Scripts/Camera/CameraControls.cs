@@ -3,6 +3,7 @@ using System.Collections;
 
 public class CameraControls : MonoBehaviour {
 
+    public float groundDist;
     public float moveSpeed;
     public float rotSpeed;
     public float moveInterpolation;
@@ -11,6 +12,7 @@ public class CameraControls : MonoBehaviour {
 
     private Vector3 newPos;
     private Vector3 newRot;
+    private float groundAdjustment;
 
 	// Use this for initialization
 	void Start () {
@@ -26,6 +28,11 @@ public class CameraControls : MonoBehaviour {
 
         Move();
         Rotate();
+    }
+
+    void FixedUpdate()
+    {
+        CheckGroundDistance();
     }
 
     /// <summary>
@@ -79,14 +86,14 @@ public class CameraControls : MonoBehaviour {
         if(vertical < 0)
         {
             newPos -= (this.transform.forward * .5f);
-            newPos.y = this.transform.position.y;
+            //newPos.y = this.transform.position.y;
         }
 
         if(vertical > 0)
         {
 
             newPos += (this.transform.forward * .5f);
-            newPos.y = this.transform.position.y;
+            //newPos.y = this.transform.position.y;
         }
 
     }
@@ -113,11 +120,27 @@ public class CameraControls : MonoBehaviour {
     }
 
     /// <summary>
+    /// This will check our distance to the ground and move us accordingly
+    /// </summary>
+    private void CheckGroundDistance() {
+        Ray ray = new Ray(this.transform.position, Vector3.down);
+        RaycastHit hit;
+        float currentDistace = 0;
+        if(Physics.Raycast(ray, out hit, 100f))
+        {
+            currentDistace = this.transform.position.y - hit.point.y;
+        }
+
+        groundAdjustment = groundDist - currentDistace;
+        newPos = new Vector3(newPos.x, groundAdjustment, newPos.z);
+    }
+
+    /// <summary>
     /// This handles our actual rotation of the camera
     /// </summary>
     private void Rotate()
     {
-        this.transform.rotation = Quaternion.Slerp(this.transform.rotation, Quaternion.Euler(newRot), moveInterpolation);
+        this.transform.rotation = Quaternion.Slerp(this.transform.rotation, Quaternion.Euler(newRot), rotInterpolation);
     }
 
     /// <summary>
